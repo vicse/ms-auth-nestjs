@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { envs } from '../common/config';
 
 @Injectable()
 export class AuthService {
@@ -67,5 +68,24 @@ export class AuthService {
       user: userLogged,
       token: this.signJwt(userLogged),
     };
+  }
+
+  verifyToken(token: string) {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: envs.jwtSecret,
+      });
+      const user = { id: payload.id, name: payload.name, email: payload.email };
+      return {
+        user,
+        token: this.signJwt(user),
+      };
+    } catch (err) {
+      console.log(err);
+      throw new RpcException({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'Invalid token',
+      });
+    }
   }
 }
