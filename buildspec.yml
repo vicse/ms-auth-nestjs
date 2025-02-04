@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: "us-east-1"  # Cambia a tu región
+    ECR_REPOSITORY: "tienda-microservices/image-registry"  # Nombre del repo en ECR
+    IMAGE_TAG: ms-auth
+    AWS_ACCOUNT_ID: 590183920340
+
+phases:
+  install:
+    commands:
+      - echo "Instalando dependencias..."
+      - apt-get update -y && apt-get install -y awscli jq
+
+  pre_build:
+    commands:
+      - echo "Autenticando con ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+      - echo "Imagen será etiquetada con: $IMAGE_TAG"
+
+  build:
+    commands:
+      - echo "Construyendo la imagen Docker..."
+      - docker build -f Dockerfile.prod -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG .
+
+  post_build:
+    commands:
+      - echo "Subiendo imagen a ECR..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+      - echo "ECR_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG"
