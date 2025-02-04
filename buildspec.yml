@@ -15,9 +15,10 @@ phases:
 
   pre_build:
     commands:
+      - echo AWS_REGION = $AWS_REGION ECR_REPOSITORY = $ECR_REPOSITORY IMAGE_TAG = $IMAGE_TAG AWS_ACCOUNT_ID = $AWS_ACCOUNT_ID
       - echo Autenticando con ECR...
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-#      - echo Imagen será etiquetada con: $IMAGE_TAG
+      - echo Imagen sera etiquetada con $IMAGE_TAG
 
   build:
     commands:
