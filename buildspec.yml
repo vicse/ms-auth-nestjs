@@ -4,7 +4,7 @@ env:
   variables:
     AWS_REGION: "us-east-1"  # Cambia a tu región
     ECR_REPOSITORY: "tienda-microservices/image-registry"  # Nombre del repo en ECR
-    IMAGE_TAG: ms-auth
+    IMAGE_TAG: "ms-auth"
     AWS_ACCOUNT_ID: 590183920340
 
 phases:
